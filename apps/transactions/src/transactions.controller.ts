@@ -15,9 +15,13 @@ export class TransactionsController {
   @Post()
   @ApiResponse({ status: 201, description: 'The transaction has been successfully created.' })
   @ApiResponse({ status: 400, description: 'Bad request.'})
-  createTransaction(@Body() createTransactionDto: CreateTransactionDto): Transaction {
-    const transaction = this.transactionsMapper.fromCreateTransactionDto(createTransactionDto);
-    return this.transactionsService.createTransaction(transaction);     
+  async createTransaction(@Body() createTransactionDto: CreateTransactionDto): Promise<Transaction> {
+    try{
+      const transaction = this.transactionsMapper.fromCreateTransactionDto(createTransactionDto);
+      return this.transactionsService.createTransaction(transaction);     
+    } catch (error) {
+
+    }
   }
 
   @Get()
