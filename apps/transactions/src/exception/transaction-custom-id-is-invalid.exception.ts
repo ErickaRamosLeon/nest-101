@@ -5,7 +5,7 @@ export class TransactionCustomIdIsInvalidException {
       this.message = "Bad custom ID: " + customId;
     }
   
-    getMessage(): string {
+    getMessage(): string {      
       return this.message;
     }
   }

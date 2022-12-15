@@ -20,9 +20,9 @@ export class TransactionsService {
 
     if (transactionDate.getTime() > now.getTime()) {
       throw new TransactionTimeIsFutureException(transaction.time)
-           }
+    }
 
-    if (transaction.customId.length > 8) {
+    if (transaction.customId.length > 8) {      
       throw new TransactionCustomIdIsInvalidException(transaction.customId);
     }
     
