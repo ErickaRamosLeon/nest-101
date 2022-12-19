@@ -1,4 +1,5 @@
-{
+{  
+  "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
     "declaration": true,
@@ -17,13 +18,21 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "esModuleInterop": true,
     "paths": {
+      "@apps/consumer": ["apps/consumer/src"],
+      "@apps/consumer/*": ["apps/consumer/src/*"],
+      "@apps/producer": ["apps/producer/src"],
+      "@apps/producer/*": ["apps/producer/src/*"],
+      "@apps/transactions": ["apps/transactions/src"],
+      "@apps/transactions/*": ["apps/transactions/src/*"],
       "y/postgres": [
         "libs/postgres/src"
       ],
       "y/postgres/*": [
         "libs/postgres/src/*"
-      ]
+      ],
+
     }
   }
 }
