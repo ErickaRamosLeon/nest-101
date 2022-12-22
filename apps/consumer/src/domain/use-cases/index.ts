@@ -1,2 +1,1 @@
-export * from './create-event.use-case';
-export * from './get-transaction.use-case';
+export * from './consumer-events-batch.use-case';

@@ -21,7 +21,7 @@
     "esModuleInterop": true,
     "paths": {
       "@apps/consumer": ["apps/consumer/src"],
-      "@apps/consumer/*": ["apps/consumer/src/*"],
+      "@apps/consumer/*": ["apps/consumerr/src/*"],
       "@apps/producer": ["apps/producer/src"],
       "@apps/producer/*": ["apps/producer/src/*"],
       "@apps/transactions": ["apps/transactions/src"],
@@ -32,6 +32,7 @@
       "y/postgres/*": [
         "libs/postgres/src/*"
       ]
+
     }
   }
 }

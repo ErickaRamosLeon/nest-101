@@ -1,16 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ProducerModule } from './producer.module';
+import { ConsumerModule } from './consumer.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(ProducerModule);
+  const app = await NestFactory.create(ConsumerModule);
   const config = new DocumentBuilder()
-  .setTitle('Events producer')
-  .setDescription('Events producer App')
+  .setTitle('Consumer apps')
+  .setDescription('Consumer apps')
   .setVersion('1.0')
   .addTag('consumer')
   .build();
   const document = SwaggerModule.createDocument(app, config);
-  await app.listen(3001);
+  await app.listen(3004);
 }
 bootstrap();
