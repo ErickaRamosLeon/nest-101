@@ -6,7 +6,7 @@ import { PostgresService } from 'y/postgres'
 export class PostgresEventAdapter implements EventsPort {
   constructor(private readonly postgresService: PostgresService) {}
   
-  async getNotProcessedEvents(nEvents: number, orders: Array<string>): Promise<Array<Event>> {
+  async getNotProcessedEvents(nEvents: number, orders: Array<string>): Promise<Event[]> {    
     const result = await this.postgresService.query(
       `SELECT "id", "serial", "transaction_id", "time", "type", "data", "created_at"
        FROM "events"
@@ -15,8 +15,8 @@ export class PostgresEventAdapter implements EventsPort {
        LIMIT $1`,
       [nEvents]
     );
-
-    return result.data.rows.map(reg => {
+    
+    const eventList = result.rows.map(reg => {
       const event = new Event();
       event.id = reg.id;
       event.serial = reg.serial;
@@ -27,17 +27,19 @@ export class PostgresEventAdapter implements EventsPort {
       event.createdAt = new Date(reg.created_at);
       event.processedAt = null;
       return event;
-    });
+    })
+    return eventList;
   }
   
-  async updateEvent(event: Event): Promise<any> {
-    return this.postgresService.query(
+  async updateEvent(event: Event): Promise<any> {    
+    const eventsUpdating = this.postgresService.query(
       `UPDATE events SET transaction_id = $1, time = $2, type = $3, data = $4, processed_at = $5 WHERE id = $6`,
       [event.transactionId, event.time.toISOString(), event.type, JSON.stringify(event.data), event.processedAt.toISOString(), event.id]
     );
+    return eventsUpdating
   }
 
-  async updateEvents(events: Event[]): Promise<any> {
-    return Promise.all(events.map(this.updateEvent));
+  async updateEvents(events: Event[]): Promise<any> {    
+    return Promise.all(events.map(e => this.updateEvent(e)));
   }
 }

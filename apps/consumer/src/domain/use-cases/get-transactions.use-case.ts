@@ -4,37 +4,24 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TransactionsPort, TRANSACTION_PORT } from '../ports';
 import { Transaction } from '../model';
 import { TransactionIdIsNotValidException, TransactionNotFoundException } from '../exception';
+import { PostgresTransactionsAdapter } from '../../infraestructure';
 
 @Injectable()
 export class GetTransactionsUseCase {
-  constructor(@Inject(TRANSACTION_PORT) private readonly transactionsPort: TransactionsPort) {}
+  //en el constructor se inyecta lo mas generico, en este caso el port
+  constructor(@Inject(TRANSACTION_PORT) private readonly transactionsPort: TransactionsPort) {}  
 
-  async getTransaction(transactionId: string): Promise<Transaction> {
-  
-    if (!validate(transactionId)) {
-      throw new TransactionIdIsNotValidException(transactionId);
-    }
-
-    const transaction = await this.transactionsPort.getTransaction(transactionId);
-
-    if (transaction === null) {
-      throw new TransactionNotFoundException(transactionId);
-    }
-
-    return transaction;
-  }
-
-  async getTransactions(transactionIds: string[]): Promise<Transaction[]> {
-    for (const transactionId of transactionIds) {
-      if (!validate(transactionId)) {
+  async getTransactions(transactionIds: string[]): Promise<Transaction[]> {   
+    for (const transactionId of transactionIds) {      
+      if (!validate(transactionId)) {        
         throw new TransactionIdIsNotValidException(transactionId);
       }
-    }
-
+    }        
     return this.transactionsPort.getTransactions(transactionIds);
   }
 
-  async updateTransactions(transactions: Transaction[]): Promise<any> {
-    return this.transactionsPort.updateTransactions(transactions);
+  async updateTransactions(transactions: Transaction[]): Promise<any> {    
+    const updateTransactions = this.transactionsPort.updateTransactions(transactions)    
+    return updateTransactions;
   }
 }

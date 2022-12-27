@@ -1,8 +1,7 @@
 import { Transaction } from "../model/transaction.model";
 
 
-export interface TransactionsPort {
-  getTransaction(transactionId: string): Promise<Transaction>;
+export interface TransactionsPort {  
   getTransactions(transactionIds: string[]): Promise<Transaction[]>;
   updateTransactions(transaction: Transaction[]): Promise<any>;
 }

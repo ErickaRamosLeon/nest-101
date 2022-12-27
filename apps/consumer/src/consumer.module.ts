@@ -6,9 +6,13 @@ import { PostgresTransactionsAdapter, PostgresEventAdapter } from './infraestruc
 import { EVENT_PORT, TRANSACTION_PORT, ConsumerEventsBatchUseCase  } from './domain';
 import { GetEventsUseCase } from './domain/use-cases/get-events.use-case';
 import { GetTransactionsUseCase } from './domain/use-cases/get-transactions.use-case';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [PostgresModule],
+  imports: [
+    ScheduleModule.forRoot(),
+    PostgresModule
+  ],
   controllers: [ConsumerController],
   providers: [
     ConsumerEventsBatchUseCase,

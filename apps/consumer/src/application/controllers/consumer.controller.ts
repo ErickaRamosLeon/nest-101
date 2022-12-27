@@ -7,15 +7,14 @@ export class ConsumerController {
   constructor( private readonly consumerEventsBatchUseCase: ConsumerEventsBatchUseCase ) {}
 
   @Get('/process/:n_events') 
-  async processEvents(@Param('n_events') nEvents: number): Promise<string> {
+  async processEvents(@Param('n_events') nEvents: number): Promise<string> {    
     await this.consumerEventsBatchUseCase.processEvents(nEvents);    
     return 'ok';
   }
   
   @Get('/process') 
   process() {        
-    return 'ok';
+    console.log('entra process')
+    return 'listo mongolito';
   }
-
-
 }

@@ -12,7 +12,7 @@ export class PostgresService {
         const client = new Client(this.config.get(database));
         try {
             await client.connect() ;
-            data = await client.query(sql, parameters);
+            data = await client.query(sql, parameters);            
         } finally {
             await client.end();
         }

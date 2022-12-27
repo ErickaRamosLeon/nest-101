@@ -6,14 +6,16 @@ import { Event } from "../model";
 export class GetEventsUseCase {
     constructor(@Inject(EVENT_PORT) private readonly eventsPort: EventsPort) { }
 
-    async getNotProcessedEvents(nEvents: number): Promise<Event[]> {
-      return this.eventsPort.getNotProcessedEvents(nEvents, ['serial']);
+    async getNotProcessedEvents(nEvents: number): Promise<Event[]> {      
+      const eventsNotProcessed = await this.eventsPort.getNotProcessedEvents(nEvents, ['serial']);      
+      return eventsNotProcessed
     }
 
-    async processEvents(events: Event[]): Promise<any> {
+    async processEvents(events: Event[]): Promise<any> {      
       const processedAt = new Date();
       events.forEach((event: Event) => event.processedAt = processedAt);
-      return this.eventsPort.updateEvents(events);
+      const updateEvents = this.eventsPort.updateEvents(events)
+      return updateEvents;
     }
 
 }
