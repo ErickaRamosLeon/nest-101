@@ -1,19 +1,37 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { ProducerModule } from '../../producer.module'
+import { validate } from 'uuid';
+import { EventsController } from './event.controller'
+import { EVENT_PORT, TRANSACTION_PORT, EventsUseCase, Event, EventsPort } from '../../domain';
+import { EventsMapper } from '../mapper';
+import { PostgresEventAdapter } from '../../infraestructure';
+
 
 describe('EventController', () => {
   let app: INestApplication;
 
-  const radmonString = (length) => {
-    
-    return '';
+  class MockEventPort implements EventsPort {
+    async createEvent(event: Event): Promise<Event> {
+      return event;
+    }    
+  }
+
+  class MockEventsUseCase extends EventsUseCase {
+    /*constructor() {
+      super(new MockEventPort())
+    }*/
+
+    async createEvent(event: Event): Promise<Event> {
+      return event;
+    }
   }
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [ProducerModule],
+      imports: [],
+      controllers: [EventsController],
+      providers: [MockEventPort, MockEventsUseCase]    
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -28,32 +46,15 @@ describe('EventController', () => {
   it('POST: /events with one client to one transaction', async () => {
     const res = await request(app.getHttpServer())
       .post('/events')
-      .send({ 
-        transactionId": "72293972-4c89-4a0b-8f5f-1691b58bcc62",
-    "time": "2022-12-06T13:32:51.810Z",
-    "type": "uno",
-    "data": {
-        "step": "aº step"
-    }    
-        customId: CUSTOM_ID,
-        time: "2022-12-10T14:35:16.355Z"
+      .send({           
+        "transactionId": "aabbbe9d-c0fc-4edf-a5bb-a83b7584d1d9",
+        "time": "2022-12-06T13:32:51.810Z",
+        "type": "uno",
+        "data": {
+          "step": "aº step"              
+        }
       });       
     expect(res.statusCode).toBe(201)
-    expect(res.body.customId).toBe(CUSTOM_ID)
-    expect(res.body.time).toBe("2022-12-10T14:35:16.355Z")      
+    expect(validate(res.body.id)).toBe(true)
   });
-
-  it('POST: /transactions with future time', async () => {
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 1);
-
-    const res = await request(app.getHttpServer())
-      .post('/transactions')
-      .send({   
-        customId: CUSTOM_ID,
-        time: futureDate.toISOString()
-      });       
-    expect(res.statusCode).toBe(400)
-    expect(res.body.message).toBe("Bad time: "+ futureDate.toString())    
-  });  */
 })
