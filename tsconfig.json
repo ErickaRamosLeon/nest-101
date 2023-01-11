@@ -1,4 +1,4 @@
-{  
+{
   "extends": "@tsconfig/node12/tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
@@ -20,19 +20,36 @@
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
     "paths": {
-      "@apps/consumer": ["apps/consumer/src"],
-      "@apps/consumer/*": ["apps/consumerr/src/*"],
-      "@apps/producer": ["apps/producer/src"],
-      "@apps/producer/*": ["apps/producer/src/*"],
-      "@apps/transactions": ["apps/transactions/src"],
-      "@apps/transactions/*": ["apps/transactions/src/*"],
+      "@apps/consumer": [
+        "apps/consumer/src"
+      ],
+      "@apps/consumer/*": [
+        "apps/consumerr/src/*"
+      ],
+      "@apps/producer": [
+        "apps/producer/src"
+      ],
+      "@apps/producer/*": [
+        "apps/producer/src/*"
+      ],
+      "@apps/transactions": [
+        "apps/transactions/src"
+      ],
+      "@apps/transactions/*": [
+        "apps/transactions/src/*"
+      ],
       "y/postgres": [
         "libs/postgres/src"
       ],
       "y/postgres/*": [
         "libs/postgres/src/*"
+      ],
+      "@app/schema-registry": [
+        "libs/schema-registry/src"
+      ],
+      "@app/schema-registry/*": [
+        "libs/schema-registry/src/*"
       ]
-
     }
   }
 }

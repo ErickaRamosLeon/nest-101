@@ -1,0 +1,16 @@
+{
+  "projects": {
+    "schema-registry": {
+      "type": "library",
+      "root": "libs/schema-registry",
+      "entryFile": "index",
+      "sourceRoot": "libs/schema-registry/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/schema-registry/tsconfig.lib.json"
+      }
+    }
+  },
+  "compilerOptions": {
+    "webpack": true
+  }
+}

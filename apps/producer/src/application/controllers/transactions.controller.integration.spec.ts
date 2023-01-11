@@ -4,6 +4,7 @@ import request from 'supertest';
 import { validate } from 'uuid';
 import { EventsController } from './event.controller'
 import { EVENT_PORT, TRANSACTION_PORT, EventsUseCase, Event, EventsPort } from '../../domain';
+import { PostgresModule } from '../../../../../libs/postgres/src';
 import { EventsMapper } from '../mapper';
 import { PostgresEventAdapter } from '../../infraestructure';
 
@@ -18,9 +19,9 @@ describe('EventController', () => {
   }
 
   class MockEventsUseCase extends EventsUseCase {
-    /*constructor() {
+    constructor() {
       super(new MockEventPort())
-    }*/
+    }
 
     async createEvent(event: Event): Promise<Event> {
       return event;
@@ -29,7 +30,7 @@ describe('EventController', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [],
+      imports: [PostgresModule],
       controllers: [EventsController],
       providers: [MockEventPort, MockEventsUseCase]    
     }).compile();

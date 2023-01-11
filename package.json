@@ -7,9 +7,10 @@
   "license": "UNLICENSED",
   "workspaces": [
     "apps/**",
-    "libs/**"    
+    "libs/**"
   ],
   "devDependencies": {
-    "prettier": "^2.3.2"
-  } 
+    "prettier": "^2.3.2",
+    "ajv":"^8.12.0"
+  }
 }

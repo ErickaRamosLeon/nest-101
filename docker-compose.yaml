@@ -14,3 +14,15 @@ services:
     ports:
       - 5432:5432
     command: ["postgres", "-c", "log_statement=all", "-c", "log_destination=stderr"]
+
+  apicurio:
+      container_name: facephi-apicurio
+      image: apicurio/apicurio-registry-sql:2.4.1.Final
+      environment:
+        - REGISTRY_DATASOURCE_URL=jdbc:postgresql://facephi-postgres:5432/
+        - REGISTRY_DATASOURCE_USERNAME=postgres
+        - REGISTRY_DATASOURCE_PASSWORD=postgres
+      ports:
+        - "8080:8080"
+      depends_on:
+        - "facephi-postgres"
