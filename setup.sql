@@ -1,5 +1,6 @@
 CREATE TABLE transactions (
 	id CHAR(36) NOT NULL PRIMARY KEY,
+    flow_id CHAR(36) NOT NULL,
 	custom_id VARCHAR(8) NOT NULL,
     time TIMESTAMP WITH TIME ZONE NOT null,
     data TEXT NOT NULL DEFAULT '[]',

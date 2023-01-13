@@ -10,7 +10,11 @@
     "libs/**"
   ],
   "devDependencies": {
-    "prettier": "^2.3.2",
-    "ajv":"^8.12.0"
+    "prettier": "^2.3.2"
+  },
+  "dependencies": {
+    "@nestjs/axios": "^1.0.0",
+    "ajv": "^8.12.0",
+    "ajv-formats":"^2.1.1"
   }
 }

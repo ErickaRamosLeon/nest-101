@@ -23,7 +23,7 @@ export class TransactionsPostgresDao extends TransactionsDao {
         const { transactionId: id, customId, time } = transaction;
         await this.postgresService.query(
             `INSERT INTO "transactions" ("id", "custom_id", "time") VALUES ($1, $2, $3)`,
-            [id, customId, time.toISOString()]
+            [id, customId, time]
         )
         return transaction
     }

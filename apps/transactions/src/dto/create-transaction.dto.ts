@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsString, IsUUID, MinLength, UUIDVersion } from 'class-validator';
 
 
 export class CreateTransactionDto {
@@ -13,4 +13,9 @@ export class CreateTransactionDto {
   @IsNotEmpty()  
   @ApiProperty({ required: true })
   readonly time: Date;
+
+  @IsUUID()
+  @IsNotEmpty()  
+  @ApiProperty({ required: true })
+  readonly flowId: string;
 }

@@ -4,12 +4,20 @@ import { TransactionCustomIdIsInvalidException } from './exception/transaction-c
 import { Transaction } from './transactions.model';
 import { transactionsDao, TransactionsDao } from './transactions.dao';
 import { TransactionTimeIsFutureException } from './exception/transaction-time-is-future.exception';
+import { IJSON_SCHEMA, ISCHEMA_REGISTRY, SchemaRegistryService, JsonSchemaService } from '@app/schema-registry'
+import jsf from 'json-schema-faker';
+import { TransactionDoesntComplySchemaException } from './exception/transaction-doesnt-comply-schema.exception';
+
 
 @Injectable()
 export class TransactionsService {
 
-  constructor(@Inject(transactionsDao) private readonly transactionsDao: TransactionsDao) {}
-  
+  constructor(
+    @Inject(transactionsDao) private readonly transactionsDao: TransactionsDao,
+    @Inject(ISCHEMA_REGISTRY) private readonly schemaRegistryService: SchemaRegistryService,
+    @Inject(IJSON_SCHEMA) private readonly JsonSchemaService: JsonSchemaService) 
+    {}
+      
   async findAll(): Promise<Transaction[]> {
     return await this.transactionsDao.allTransactions() ;
   }
@@ -17,6 +25,7 @@ export class TransactionsService {
   async createTransaction(transaction: Transaction): Promise<Transaction> {    
     const now = new Date();
     const transactionDate = new Date(transaction.time);
+    const schema = await this.schemaRegistryService.getSchema(transaction.flowId)   
 
     if (transactionDate.getTime() > now.getTime()) {
       throw new TransactionTimeIsFutureException(transaction.time)
@@ -27,6 +36,12 @@ export class TransactionsService {
     }
     
     transaction.transactionId = uuidv4();
+    console.log(transaction.transactionId)
+
+    if (!this.JsonSchemaService.validate(schema, transaction)) {
+      throw new TransactionDoesntComplySchemaException(schema);
+    }
+
 
     return await this.transactionsDao.saveTransaction(transaction);
   }
