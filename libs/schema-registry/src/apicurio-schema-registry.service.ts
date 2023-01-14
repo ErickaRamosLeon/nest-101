@@ -15,8 +15,7 @@ export class ApicurioSchemaRegistryService implements SchemaRegistryService {
         throw new Error("Method not implemented.");
     }
     async getSchema(schemaName: string): Promise<object> {
-        try {
-            console.log('entra a get schema')
+        try {            
             const { data } = await this.http.axiosRef.get(`/api/artifacts/${schemaName}`, {
               baseURL: APICURIO_URL,
             })      

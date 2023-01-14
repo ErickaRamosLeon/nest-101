@@ -18,8 +18,7 @@ import { TransactionsService } from './transactions.service';
   providers: [
     TransactionsService, 
     TransactionsMapper,
-  { provide: 'TransactionsDao', useClass: TransactionsPostgresDao }
-  //{ provide: ISCHEMA_REGISTRY, useClass: ApicurioSchemaRegistryService }  
+  { provide: 'TransactionsDao', useClass: TransactionsPostgresDao }  
   ],
 })
 export class TransactionsModule {}

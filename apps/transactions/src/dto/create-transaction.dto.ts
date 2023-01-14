@@ -14,7 +14,7 @@ export class CreateTransactionDto {
   @ApiProperty({ required: true })
   readonly time: Date;
 
-  @IsUUID()
+  @IsString()
   @IsNotEmpty()  
   @ApiProperty({ required: true })
   readonly flowId: string;

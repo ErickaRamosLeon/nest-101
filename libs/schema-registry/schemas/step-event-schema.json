@@ -1,0 +1,15 @@
+{
+  "title": "Transaction Step Changed Event",
+  "description": "Transaction Step Changed Event",
+  "type": "object",
+  "properties": {
+    "step": {
+      "description": "Current transaction step",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "step"
+  ]
+}

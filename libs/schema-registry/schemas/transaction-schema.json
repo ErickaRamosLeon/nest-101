@@ -1,0 +1,66 @@
+{
+  "type": "object",
+  "properties": {    
+    "transactionId": {
+      "type": "string",
+      "default": ""
+    },
+    "flowId": {
+      "type": "string",
+      "default": ""
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time"      
+    },
+    "customId": {
+      "type": "string",
+      "default": "",
+      "minLength": 0,
+      "maxLength": 50
+    },
+    "createdAt": {
+      "type": "string",
+      "default": ""
+    },
+    "updatedAt": {
+      "type": "string",
+      "default": ""
+    },
+    "step": {
+      "type": "string",          
+      "enum": [
+        "START",
+        "SELPHI_WIDGET",
+        "SELPHID_WIDGET",
+        "FINISH"
+      ]      
+    },
+    "status": {
+      "type": "string",                
+      "enum": [
+        "STARTED",
+        "DENIED",
+        "EXPIRED",
+        "BLACKLISTED",
+        "SUCCEEDED",
+        "CANCELLED",
+        "ERROR"
+      ]      
+    },
+    "data":{
+      "type": "array",      
+      "default": []
+    }
+  },
+  "required": [    
+    "transactionId",
+    "flowId",
+    "customId",
+    "createdAt",
+    "updatedAt",
+    "step",
+    "status",
+    "data" 
+  ]
+}

@@ -36,6 +36,7 @@ export class ConsumerEventsBatchUseCase {
     const transactions = await this.getTransactionsUseCase.getTransactions(Object.keys(eventsIndexedByTransactionId));
     
     for (const transaction of transactions) {
+      console.log('transaction', transaction)
       this.applyEventsToTransaction(eventsIndexedByTransactionId[transaction.transactionId], transaction);      
     }
     
@@ -48,7 +49,7 @@ export class ConsumerEventsBatchUseCase {
     events.sort((a: Event, b: Event) => a.serial - b.serial).forEach((e: Event) => transaction.data.push(e));    
   }
 
-  @Interval(INTERVAL_MS)
+  //@Interval(INTERVAL_MS)
   public async consumerCron() {
     console.log('n_eventos') 
     this.processEvents(N_EVENTS)

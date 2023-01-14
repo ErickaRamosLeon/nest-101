@@ -1,0 +1,24 @@
+{
+    "title": "Transaction Status Changed Event",
+    "description": "Transaction Status Changed Event",
+    "type": "object",
+    "properties": {
+      "status": {
+        "description": "Current transaction step",
+        "type": "string",
+        "enum": [
+          "STARTED",
+          "DENIED",
+          "EXPIRED",
+          "BLACKLISTED",
+          "SUCCEEDED",
+          "CANCELLED",
+          "ERROR"
+        ]
+      }
+    },
+    "additionalProperties": false,    
+    "required": [
+      "status"
+    ]
+  }

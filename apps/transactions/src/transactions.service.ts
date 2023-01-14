@@ -16,7 +16,12 @@ export class TransactionsService {
     @Inject(transactionsDao) private readonly transactionsDao: TransactionsDao,
     @Inject(ISCHEMA_REGISTRY) private readonly schemaRegistryService: SchemaRegistryService,
     @Inject(IJSON_SCHEMA) private readonly JsonSchemaService: JsonSchemaService) 
-    {}
+    {
+      JSONSchemaFaker.option({
+        useDefaultValue: true,
+        alwaysFakeOptionals: true
+      });
+    }
       
   async findAll(): Promise<Transaction[]> {
     return await this.transactionsDao.allTransactions() ;
@@ -25,11 +30,10 @@ export class TransactionsService {
   async createTransaction(transaction: Transaction): Promise<Transaction> {    
     const now = new Date();
     const transactionDate = new Date(transaction.time);
-    const schema = await this.schemaRegistryService.getSchema(transaction.flowId)
-    
-    let schemaTransaction = JSONSchemaFaker.generate(schema)    
-
-    console.log('schemaTransaction', schemaTransaction)
+    const schema = await this.schemaRegistryService.getSchema(transaction.flowId);
+        
+    let transactionSkeleton: Transaction = JSON.parse(JSON.stringify(JSONSchemaFaker.generate(schema)));
+    console.log('schemaTransaction', transactionSkeleton)
 
     if (transactionDate.getTime() > now.getTime()) {
       throw new TransactionTimeIsFutureException(transaction.time)
@@ -39,18 +43,25 @@ export class TransactionsService {
       throw new TransactionCustomIdIsInvalidException(transaction.customId);
     }
     
-    transaction.transactionId = uuidv4();
+    const transactionId = uuidv4();
 
-    //schemaTransaction.customId = 
-
-
+    transactionSkeleton.transactionId = transactionId;
+    transactionSkeleton.flowId = transaction.flowId;
+    transactionSkeleton.customId = transaction.customId;
+    transactionSkeleton.time = transaction.time;
     
-
-    if (!this.JsonSchemaService.validate(schema, transaction)) {
+    const newTransaction = { 
+      ...transactionSkeleton,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()      
+    }
+    console.log('data', newTransaction)
+    const valid = this.JsonSchemaService.validate(schema, newTransaction)
+    
+    if (!valid) {    
       throw new TransactionDoesntComplySchemaException(schema);
     }
 
-
-    return await this.transactionsDao.saveTransaction(transaction);
+    return await this.transactionsDao.saveTransaction(newTransaction);
   }
 }

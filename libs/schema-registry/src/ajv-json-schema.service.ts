@@ -9,20 +9,15 @@ addFormats(ajv);
 @Injectable()
 export class AjvJsonSchemaService implements JsonSchemaService {
     //private readonly ajv = new Ajv();
-    validate(schema: object, data: unknown): boolean {
-        console.log('validateXXXX')
+    validate(schema: object, data: unknown): boolean {        
         const validate = ajv.compile(schema);      
-
-        console.log('validateXXXX', validate)
-
-
         const valid = validate(data);
-        console.log("valid", valid)
+        
         if (!valid) {
             // Se devería devolver el listado de errores en lugar de un boolean
             console.error(validate.errors);
           }
-        console.log("data", data)
+        
 
         return valid;
     }  

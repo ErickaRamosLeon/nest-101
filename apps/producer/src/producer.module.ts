@@ -4,9 +4,10 @@ import { EventsController, EventsMapper, TransactionsController } from './applic
 import { PostgresTransactionAdapter, PostgresEventAdapter } from './infraestructure';
 
 import { EVENT_PORT, TRANSACTION_PORT, EventsUseCase, TransactionUseCase  } from './domain';
+import { SchemaRegistryModule } from '@app/schema-registry';
 
 @Module({
-  imports: [PostgresModule],
+  imports: [PostgresModule, SchemaRegistryModule],
   controllers: [TransactionsController, EventsController],
   providers: [
     TransactionUseCase,

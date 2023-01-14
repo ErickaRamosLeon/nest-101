@@ -19,11 +19,12 @@ export class TransactionsPostgresDao extends TransactionsDao {
         
     }
 
-    async saveTransaction(transaction: Transaction): Promise<Transaction> {
-        const { transactionId: id, customId, time } = transaction;
+    async saveTransaction(transaction): Promise<Transaction> {
+        console.log('tttt', transaction.createdAt)
+        const { transactionId: id, flowId, customId, time, createdAt, data, updatedAt, step, status } = transaction;
         await this.postgresService.query(
-            `INSERT INTO "transactions" ("id", "custom_id", "time") VALUES ($1, $2, $3)`,
-            [id, customId, time]
+            `INSERT INTO "transactions" ("id", "flow_id", "custom_id", "time", "created_at", "data", "updated_at", "step", "status") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+            [id, flowId, customId, time, createdAt, JSON.stringify(data), updatedAt, step, status]
         )
         return transaction
     }
