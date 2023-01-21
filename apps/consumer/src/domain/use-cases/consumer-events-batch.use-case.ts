@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { Transaction, Event } from '../model';
+import { IJSON_SCHEMA, ISCHEMA_REGISTRY, SchemaRegistryService, JsonSchemaService } from '@app/schema-registry'
 import { GetEventsUseCase } from './get-events.use-case';
 import { GetTransactionsUseCase } from './get-transactions.use-case';
 
@@ -23,7 +24,9 @@ const N_EVENTS = 3
 
 @Injectable()
 export class ConsumerEventsBatchUseCase {
-  constructor(
+  constructor(   
+    @Inject(ISCHEMA_REGISTRY) private readonly schemaRegistryService: SchemaRegistryService,
+    @Inject(IJSON_SCHEMA) private readonly jsonSchemaService:JsonSchemaService,    
     private readonly getEventsUseCase: GetEventsUseCase,
     private readonly getTransactionsUseCase: GetTransactionsUseCase
   ) {}
@@ -32,12 +35,18 @@ export class ConsumerEventsBatchUseCase {
     const events = await this.getEventsUseCase.getNotProcessedEvents(nEvents);   
     
     const eventsIndexedByTransactionId = indexArrayOfObject(events, 'transactionId');    
+    console.log('events', eventsIndexedByTransactionId)
 
     const transactions = await this.getTransactionsUseCase.getTransactions(Object.keys(eventsIndexedByTransactionId));
     
     for (const transaction of transactions) {
       console.log('transaction', transaction)
-      this.applyEventsToTransaction(eventsIndexedByTransactionId[transaction.transactionId], transaction);      
+      this.applyEventsToTransaction(eventsIndexedByTransactionId[transaction.transactionId], transaction);
+      console.log('applyEvents', transaction['flowId'])
+      const schema = await this.schemaRegistryService.getSchema(transaction['flowId']);
+      console.log('schema consumer', schema)
+      const valid = this.jsonSchemaService.validate(schema, transaction)      
+      console.log('valid', valid)
     }
     
     await this.getEventsUseCase.processEvents(events);
@@ -46,7 +55,10 @@ export class ConsumerEventsBatchUseCase {
   }
 
   applyEventsToTransaction(events: Array<Event>, transaction: Transaction) {       
-    events.sort((a: Event, b: Event) => a.serial - b.serial).forEach((e: Event) => transaction.data.push(e));    
+    events.sort((a: Event, b: Event) => a.serial - b.serial).forEach((e: Event) => {
+      transaction.data.push(e);      
+      transaction.updatedAt = new Date()
+    });    
   }
 
   //@Interval(INTERVAL_MS)

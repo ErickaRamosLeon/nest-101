@@ -12,6 +12,8 @@ export class PostgresService {
         const client = new Client(this.config.get(database));
         try {
             await client.connect() ;
+            console.log('sql', sql)
+            console.log('parameters', parameters)
             data = await client.query(sql, parameters);            
         } finally {
             await client.end();

@@ -2,15 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { PostgresService } from 'y/postgres'
 import { TransactionsPort, Transaction } from '../../domain';
 
-const rowList = '"id", "custom_id", "time", "data", "created_at"';
+const rowList = '"id", "custom_id", "flow_id", "time", "data", "step", "status", "created_at", "updated_at"';
 
-const rowToTransaction = ({id, custom_id, time, data, created_at}): Transaction => {
-  const transaction = new Transaction();
-  transaction.transactionId = id;
-  transaction.customId = custom_id;
-  transaction.time = new Date(time);
-  transaction.data = JSON.parse(data);
-  transaction.createdAt = new Date(created_at);  
+const rowToTransaction = ({id, flow_id, custom_id, time, data, step, status, created_at, updated_at}): Transaction => {  
+  
+  let transaction: Transaction = {
+    transactionId: id,
+    flowId: flow_id,
+    customId: custom_id,
+    time: time,
+    step: step,
+    status: status,
+    data: JSON.parse(data),
+    createdAt: created_at,
+    updatedAt: updated_at,
+  }
+  console.log("transaction consumer", transaction) 
   return transaction;
 };
 
@@ -22,12 +29,16 @@ export class PostgresTransactionsAdapter implements TransactionsPort{
     if (transactionIds.length === 0) {
       return [];
     }   
-    
+    console.log(rowList)
+    console.log("transactionsIDS", transactionIds)
     const result = await this.postgresService.query(
       `SELECT ${rowList} FROM "transactions" WHERE "id" IN('${transactionIds.join("','")}')`, []
       );   
     
-    const rows_map = result.rows.map(rowToTransaction);
+
+    console.log("result", result.rows)
+    const rows_map = result.rows.map(rowToTransaction);    
+    console.log("rows_map", rows_map)
     
     return rows_map
   }

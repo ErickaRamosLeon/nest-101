@@ -18,12 +18,10 @@ export class EventsUseCase {
   async createEvent(event: Event): Promise<Event> {
 
     const schema = await this.schemaRegistryService.getSchema(event.type);
-    console.log('schema event', schema)    
+      
     if (!schema) {
       throw new EventTypeIsNotValidException(event.type);
     }
-
-    console.log('schema event', event.data)  
 
     const valid = this.jsonSchemaService.validate(schema, event.data);
 

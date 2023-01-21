@@ -7,11 +7,13 @@ import { EVENT_PORT, TRANSACTION_PORT, ConsumerEventsBatchUseCase  } from './dom
 import { GetEventsUseCase } from './domain/use-cases/get-events.use-case';
 import { GetTransactionsUseCase } from './domain/use-cases/get-transactions.use-case';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SchemaRegistryModule } from '@app/schema-registry';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    PostgresModule
+    PostgresModule,
+    SchemaRegistryModule
   ],
   controllers: [ConsumerController],
   providers: [
