@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { v4 as uuidv4 } from 'uuid';
-import { EventsPort } from "../ports";
+import { EVENT_PORT, EventsPort } from "../ports";
 import { Event } from "../model";
-import { IJSON_SCHEMA, ISCHEMA_REGISTRY, SchemaRegistryService, JsonSchemaService } from '@app/schema-registry'
+import { IJSON_SCHEMA, ISCHEMA_REGISTRY, SchemaRegistryService, JsonSchemaService } from '@libs/schema-registry'
 import { EventDataIsNotValidException, EventTypeIsNotValidException } from "../exception";
 
 
@@ -10,12 +10,14 @@ import { EventDataIsNotValidException, EventTypeIsNotValidException } from "../e
 @Injectable()
 export class EventsUseCase {
   constructor(
-    @Inject('EventsPort') private readonly eventPort: EventsPort,
+    @Inject(EVENT_PORT) private readonly eventPort: EventsPort,
     @Inject(ISCHEMA_REGISTRY) private readonly schemaRegistryService: SchemaRegistryService,
     @Inject(IJSON_SCHEMA) private readonly jsonSchemaService: JsonSchemaService
   ) {}
 
   async createEvent(event: Event): Promise<Event> {
+    
+    event.id = uuidv4();
 
     const schema = await this.schemaRegistryService.getSchema(event.type);
       
@@ -28,8 +30,6 @@ export class EventsUseCase {
     if (!valid) {
       throw new EventDataIsNotValidException();
     }
-
-    event.id = uuidv4();
 
     const newEvent = await this.eventPort.createEvent(event);
     return newEvent;

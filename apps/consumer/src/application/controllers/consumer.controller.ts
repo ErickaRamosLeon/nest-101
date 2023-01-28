@@ -1,5 +1,8 @@
 import { ConsumerEventsBatchUseCase } from '../../domain';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
+import { 
+  TransactionNotFoundException, TransactionIdIsNotValidException
+} from '../../domain';
 
 @Controller('/consumer')
 
@@ -8,13 +11,16 @@ export class ConsumerController {
 
   @Get('/process/:n_events') 
   async processEvents(@Param('n_events') nEvents: number): Promise<string> {    
-    await this.consumerEventsBatchUseCase.processEvents(nEvents);    
-    return 'ok';
-  }
-  
-  @Get('/process') 
-  process() {        
-    console.log('entra process')
-    return 'listo mongolito';
+    try{
+      await this.consumerEventsBatchUseCase.processEvents(nEvents);    
+      return 'ok';
+    } catch (error) {
+      if (error instanceof TransactionNotFoundException) {        
+        throw new HttpException(error.getMessage(), HttpStatus.BAD_REQUEST);
+      } 
+      if (error instanceof TransactionIdIsNotValidException) {        
+        throw new HttpException(error.getMessage(), HttpStatus.BAD_REQUEST);
+      } 
+    }
   }
 }

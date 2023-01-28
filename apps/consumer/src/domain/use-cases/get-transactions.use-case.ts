@@ -6,6 +6,7 @@ import { Transaction } from '../model';
 import { TransactionIdIsNotValidException, TransactionNotFoundException } from '../exception';
 import { PostgresTransactionsAdapter } from '../../infraestructure';
 
+
 @Injectable()
 export class GetTransactionsUseCase {
   //en el constructor se inyecta lo mas generico, en este caso el port
@@ -16,7 +17,7 @@ export class GetTransactionsUseCase {
       if (!validate(transactionId)) {        
         throw new TransactionIdIsNotValidException(transactionId);
       }
-    }        
+    }
     return this.transactionsPort.getTransactions(transactionIds);
   }
 

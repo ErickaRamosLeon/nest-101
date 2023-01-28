@@ -8,7 +8,10 @@ export class TransactionsMapper {
   fromCreateTransactionDto(createTransactionDto: CreateTransactionDto): Transaction {
     return {
       ...createTransactionDto,
-      transactionId: ''
+      time: new Date(createTransactionDto.time).toISOString(),
+      transactionId: '',
+      createdAt: '',
+      updatedAt: '',
     };
   }
 }

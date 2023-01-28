@@ -3,8 +3,7 @@ export class TransactionCustomIdIsInvalidException {
   
     constructor(customId: string) {
       this.message = "Bad custom ID: " + customId;
-    }
-  
+    }  
     getMessage(): string {      
       return this.message;
     }

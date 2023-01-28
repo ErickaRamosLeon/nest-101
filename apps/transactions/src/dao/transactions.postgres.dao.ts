@@ -1,16 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { PostgresService } from "y/postgres";
-import { TransactionsDao } from "../transactions.dao";
+import { PostgresService } from "@libs/postgres";
+import { TransactionsDao } from "../transactions.dao.interface";
 import { Transaction } from "../transactions.model";
 
 
 
 
 @Injectable()
-export class TransactionsPostgresDao extends TransactionsDao {
-    constructor( private readonly postgresService: PostgresService) {
-        super()
-    }
+export class TransactionsPostgresDao implements TransactionsDao {
+    constructor( private readonly postgresService: PostgresService) {}
 
     async allTransactions(): Promise<Transaction[]> {
         const listTransactions = await this.postgresService.query(
@@ -19,12 +17,11 @@ export class TransactionsPostgresDao extends TransactionsDao {
         
     }
 
-    async saveTransaction(transaction): Promise<Transaction> {
-        console.log('tttt', transaction.createdAt)
-        const { transactionId: id, flowId, customId, time, createdAt, data, updatedAt, step, status } = transaction;
+    async saveTransaction(transaction): Promise<Transaction> {        
+        const { transactionId: id, flowId, customId, time, createdAt, updatedAt, currentStep, steps, status, timeline } = transaction;        
         await this.postgresService.query(
-            `INSERT INTO "transactions" ("id", "flow_id", "custom_id", "time", "created_at", "data", "updated_at", "step", "status") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-            [id, flowId, customId, time, createdAt, JSON.stringify(data), updatedAt, step, status]
+            `INSERT INTO "transactions" ("id", "flow_id", "custom_id", "time", "created_at", "updated_at", "current_step", "steps", "status", "timeline") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+            [id, flowId, customId, time, createdAt, updatedAt, currentStep, JSON.stringify(steps), status, JSON.stringify(timeline)]
         )
         return transaction
     }

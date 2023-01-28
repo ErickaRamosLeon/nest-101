@@ -15,9 +15,8 @@ export class AjvJsonSchemaService implements JsonSchemaService {
         
         if (!valid) {
             // Se devería devolver el listado de errores en lugar de un boolean
-            console.error(validate.errors);
-          }
-        
+            console.error('error', validate.errors);        
+          }       
 
         return valid;
     }  

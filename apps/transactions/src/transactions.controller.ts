@@ -1,8 +1,13 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Post } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { TransactionCustomIdIsInvalidException } from './exception/transaction-custom-id-is-invalid.exception';
-import { TransactionTimeIsFutureException } from './exception/transaction-time-is-future.exception';
+import { 
+  TransactionCustomIdIsInvalidException, 
+  TransactionTimeIsFutureException, 
+  TransactionDoesntComplySchemaException,
+  TransactionUnknownSchemaException,
+  TransactionSchemaNotFoundException 
+} from './exception';
 import { TransactionsMapper } from './transactions.mapper';
 import { Transaction } from './transactions.model';
 import { TransactionsService } from './transactions.service';
@@ -28,7 +33,16 @@ export class TransactionsController {
       } 
       if (error instanceof TransactionTimeIsFutureException) {        
         throw new HttpException(error.getMessage(), HttpStatus.BAD_REQUEST);
-      }       
+      }
+      if (error instanceof TransactionDoesntComplySchemaException) {
+        throw new HttpException(error.getMessage(), HttpStatus.BAD_REQUEST);
+      }
+      if (error instanceof TransactionUnknownSchemaException) {
+        throw new HttpException(error.getMessage(), HttpStatus.BAD_REQUEST);
+      }
+      if (error instanceof TransactionSchemaNotFoundException) {
+        throw new HttpException(error.getMessage(), HttpStatus.BAD_REQUEST);
+      }
       throw new HttpException(error.toString(), HttpStatus.INTERNAL_SERVER_ERROR);      
     }
   }

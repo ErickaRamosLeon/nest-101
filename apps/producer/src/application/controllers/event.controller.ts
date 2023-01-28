@@ -1,8 +1,11 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Post } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
-import { Event, EventDataIsNotValidException, EventsUseCase, EventTypeIsNotValidException } from '../../domain';
+import { Event, EventDataIsNotValidException, EventsUseCase, 
+  EventTypeIsNotValidException 
+} from '../../domain';
 import { CreateEventDto } from '../dto/create-event.dto';
 import { EventsMapper } from '../mapper/events.mapper';
+
 
 
 
@@ -26,6 +29,7 @@ export class EventsController {
         throw new HttpException(error.getMessage(), HttpStatus.BAD_REQUEST);
       }
       if (error instanceof EventDataIsNotValidException) {
+        
         throw new HttpException(error.getMessage(), HttpStatus.BAD_REQUEST);
       }
       throw new HttpException(error.toString(), HttpStatus.INTERNAL_SERVER_ERROR);

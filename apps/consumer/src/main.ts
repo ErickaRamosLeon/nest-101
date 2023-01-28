@@ -11,6 +11,6 @@ async function bootstrap() {
   .addTag('consumer')
   .build();
   const document = SwaggerModule.createDocument(app, config);
-  await app.listen(3004);
+  await app.listen(3007);
 }
 bootstrap();

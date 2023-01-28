@@ -1,7 +1,7 @@
 export class TransactionTimeIsFutureException {
     message: string;
   
-    constructor(time: Date) {
+    constructor(time: string) {
       this.message = "Bad time: " + time;
     }
   

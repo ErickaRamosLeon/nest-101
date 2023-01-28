@@ -1,9 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { Transaction, Event } from '../model';
-import { IJSON_SCHEMA, ISCHEMA_REGISTRY, SchemaRegistryService, JsonSchemaService } from '@app/schema-registry'
+import { IJSON_SCHEMA, ISCHEMA_REGISTRY, SchemaRegistryService, JsonSchemaService } from '@libs/schema-registry'
 import { GetEventsUseCase } from './get-events.use-case';
 import { GetTransactionsUseCase } from './get-transactions.use-case';
+import {TRANSACTION_EVENT_APPLIER_PORT, TransactionEventApplierPort} from "../ports";
 
 const indexArrayOfObject = (array: Array<object>, field: string) => {
   const ret = {};
@@ -27,45 +28,49 @@ export class ConsumerEventsBatchUseCase {
   constructor(   
     @Inject(ISCHEMA_REGISTRY) private readonly schemaRegistryService: SchemaRegistryService,
     @Inject(IJSON_SCHEMA) private readonly jsonSchemaService:JsonSchemaService,    
+    @Inject(TRANSACTION_EVENT_APPLIER_PORT) private readonly transactionEventApplierService: TransactionEventApplierPort,
     private readonly getEventsUseCase: GetEventsUseCase,
-    private readonly getTransactionsUseCase: GetTransactionsUseCase
+    private readonly getTransactionsUseCase: GetTransactionsUseCase,    
   ) {}
 
   async processEvents(nEvents: number) {   
     const events = await this.getEventsUseCase.getNotProcessedEvents(nEvents);   
     
-    const eventsIndexedByTransactionId = indexArrayOfObject(events, 'transactionId');    
-    console.log('events', eventsIndexedByTransactionId)
+    const eventsIndexedByTransactionId = indexArrayOfObject(events, 'transactionId');
 
     const transactions = await this.getTransactionsUseCase.getTransactions(Object.keys(eventsIndexedByTransactionId));
     
-    for (const transaction of transactions) {
-      console.log('transaction', transaction)
-      this.applyEventsToTransaction(eventsIndexedByTransactionId[transaction.transactionId], transaction);
-      console.log('applyEvents', transaction['flowId'])
-      const schema = await this.schemaRegistryService.getSchema(transaction['flowId']);
-      console.log('schema consumer', schema)
-      const valid = this.jsonSchemaService.validate(schema, transaction)      
-      console.log('valid', valid)
+    const updatedTransactions = []
+
+    for (const transaction of transactions) {    
+      let updatedTransaction = this.applyEventsToTransaction(transaction, eventsIndexedByTransactionId[transaction.transactionId]);      
+      const schema = await this.schemaRegistryService.getSchema(updatedTransaction['flowId']);      
+      const valid = this.jsonSchemaService.validate(schema, updatedTransaction)      
+      updatedTransactions.push(updatedTransaction)
+    // TODO is not valid
     }
     
     await this.getEventsUseCase.processEvents(events);
     
-    await this.getTransactionsUseCase.updateTransactions(transactions);
+    await this.getTransactionsUseCase.updateTransactions(updatedTransactions);
   }
 
-  applyEventsToTransaction(events: Array<Event>, transaction: Transaction) {       
-    events.sort((a: Event, b: Event) => a.serial - b.serial).forEach((e: Event) => {
-      transaction.data.push(e);      
-      transaction.updatedAt = new Date()
-    });    
+  applyEventsToTransaction(transaction: Transaction, events: Event[]): Transaction {
+   let updatedTransaction = transaction;
+   events
+     .sort((a: Event, b: Event) => a.serial - b.serial) // para que el orden no sea 1,10,11,2,20     
+     .forEach(
+       (event: Event) => updatedTransaction = this.transactionEventApplierService.applyEventToTransaction(updatedTransaction, event)
+     )
+     //.map((event)=> updatedTransaction = this.transactionEventApplierService.applyEventToTransaction(updatedTransaction, event))
+
+   return updatedTransaction;
   }
 
   //@Interval(INTERVAL_MS)
   public async consumerCron() {
-    console.log('n_eventos') 
-    this.processEvents(N_EVENTS)
-    console.log('processed...') 
-
+  console.log('consumerCron with N_EVENTS = ', N_EVENTS);
+    await this.processEvents(N_EVENTS);
+    console.log('consumerCron finished!');
   }
 }

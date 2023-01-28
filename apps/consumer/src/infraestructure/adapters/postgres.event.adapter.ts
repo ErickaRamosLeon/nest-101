@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EventsPort, Event } from '../../domain'
-import { PostgresService } from 'y/postgres'
+import { PostgresService } from '@libs/postgres'
 
 @Injectable()
 export class PostgresEventAdapter implements EventsPort {

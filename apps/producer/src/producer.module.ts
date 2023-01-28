@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { PostgresModule } from 'y/postgres';
+import { PostgresModule } from '@libs/postgres';
 import { EventsController, EventsMapper, TransactionsController } from './application';
 import { PostgresTransactionAdapter, PostgresEventAdapter } from './infraestructure';
 
 import { EVENT_PORT, TRANSACTION_PORT, EventsUseCase, TransactionUseCase  } from './domain';
-import { SchemaRegistryModule } from '@app/schema-registry';
+import { SchemaRegistryModule } from '@libs/schema-registry';
 
 @Module({
   imports: [PostgresModule, SchemaRegistryModule],

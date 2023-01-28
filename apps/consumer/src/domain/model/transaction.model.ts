@@ -2,10 +2,11 @@ export type Transaction = {
   transactionId: string;
   flowId: string;
   customId: string;
-  time: Date;
-  step: string;
-  status: string;        
-  data: Array<object>;
-  createdAt: Date;
-  updatedAt: Date;
+  time: string;
+  status: object;        
+  timeline: Array<object>;  
+  currentStep: object;       
+  createdAt: string;
+  updatedAt: string;
+  steps: Array<object>
 }

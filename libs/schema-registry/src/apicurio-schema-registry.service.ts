@@ -2,8 +2,6 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from "@nestjs/common";
 import { SchemaRegistryService } from "./schema-registry.interface";
 
-import { AxiosError } from 'axios';
-
 const APICURIO_URL = 'http://localhost:8080'
 
 @Injectable()

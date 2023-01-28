@@ -1,16 +1,17 @@
-CREATE TABLE transactions (
+CREATE TABLE public.transactions (
 	id CHAR(36) NOT NULL PRIMARY KEY,
     flow_id CHAR(36) NOT NULL,
-	time TIMESTAMP WITH TIME ZONE NOT null,
-    custom_id VARCHAR(8) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE,
-    updated_at TIMESTAMP WITH TIME ZONE,
-    step VARCHAR(127),
-    status VARCHAR(127),
-    data TEXT NOT NULL
+    custom_id  CHAR(36) NOT NULL,
+    time TIMESTAMP WITH TIME ZONE NOT NULL,        
+    current_step TEXT NOT NULL DEFAULT '{}',
+    steps TEXT NOT NULL DEFAULT '[]',
+    status TEXT NOT NULL DEFAULT '{}',        
+    timeline TEXT NOT NULL DEFAULT '[]',
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE TABLE events (
+CREATE TABLE public.events (
     id CHAR(36) NOT NULL PRIMARY KEY,
     serial SERIAL NOT NULL,
     transaction_id CHAR(36) NOT NULL,

@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "properties": {    
+  "properties": {
     "transactionId": {
       "type": "string",
       "default": ""
@@ -9,15 +9,16 @@
       "type": "string",
       "default": ""
     },
-    "time": {
-      "type": "string",
-      "format": "date-time"      
-    },
     "customId": {
       "type": "string",
       "default": "",
       "minLength": 0,
       "maxLength": 50
+    },
+    "time": {
+      "type": "string",
+      "default": "",
+      "format": "date-time"
     },
     "createdAt": {
       "type": "string",
@@ -27,40 +28,128 @@
       "type": "string",
       "default": ""
     },
-    "step": {
-      "type": "string",          
-      "enum": [
-        "START",
-        "SELPHI_WIDGET",
-        "SELPHID_WIDGET",
-        "FINISH"
-      ]      
+    "currentStep": {
+      "type": "object",
+      "properties": {
+        "time": {
+          "type": "string",
+          "default": ""
+        },
+        "value": {
+          "type": "string",
+          "default": "START",
+          "enum": [
+            "START",
+            "SELPHI_WIDGET",
+            "SELPHID_WIDGET",
+            "FINISH"
+          ]
+        }
+      },
+      "required": [
+        "time",
+        "value"
+      ],
+      "additionalProperties": false    
+    },
+    "steps": {
+      "type": "array",
+      "default": [
+        {
+          "order": 0,
+          "name": "START",
+          "activated": "false"
+        },
+        {
+          "order": 1,
+          "name": "SELPHI_WIDGET",
+          "activated": "false"
+        },
+        {
+          "order": 2,
+          "name": "SELPHID_WIDGET",
+          "activated": "false"
+        },
+        {
+          "order": 3,
+          "name": "FINISH",
+          "activated": "false"
+        }
+      ],
+      "items": {
+        "type": "object",
+        "properties": {
+          "order": {
+            "type": "number",
+            "minimum": 0
+          },
+          "name": {
+            "type": "string",
+            "enum": [
+              "START",
+              "SELPHI_WIDGET",
+              "SELPHID_WIDGET",
+              "FINISH"
+            ]
+          }
+        }
+      },
+      "minItems": 4,
+      "maxItems": 4
     },
     "status": {
-      "type": "string",                
-      "enum": [
-        "STARTED",
-        "DENIED",
-        "EXPIRED",
-        "BLACKLISTED",
-        "SUCCEEDED",
-        "CANCELLED",
-        "ERROR"
-      ]      
+      "type": "object",
+      "properties": {
+        "time": {
+          "type": "string",
+          "default": ""
+        },
+        "value": {
+          "type": "string",
+          "default": "STARTED",
+          "enum": [
+            "STARTED",
+            "DENIED",
+            "EXPIRED",
+            "BLACKLISTED",
+            "SUCCEEDED",
+            "CANCELLED",
+            "ERROR"
+          ]
+        }
+      },
+      "required": [
+        "time",
+        "value"
+      ]
     },
-    "data":{
-      "type": "array",      
-      "default": []
+    "timeline": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "time": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      }
     }
   },
-  "required": [    
+  "required": [
     "transactionId",
-    "flowId",
     "customId",
     "createdAt",
     "updatedAt",
-    "step",
-    "status",
-    "data" 
+    "currentStep",
+    "steps",
+    "status",  
+    "timeline"
   ]
 }

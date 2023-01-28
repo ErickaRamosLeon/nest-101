@@ -1,26 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from 'y/postgres'
+import { PostgresService } from '@libs/postgres'
 import { TransactionsPort, Transaction } from '../../domain';
 
-const rowList = '"id", "custom_id", "flow_id", "time", "data", "step", "status", "created_at", "updated_at"';
+const rowList = '"id", "custom_id", "flow_id", "time", "timeline", "status", "created_at", "updated_at", "current_step", "steps"';
 
-const rowToTransaction = ({id, flow_id, custom_id, time, data, step, status, created_at, updated_at}): Transaction => {  
+const rowToTransaction = (row): Transaction => {
+  return {
+    transactionId: row.id,
+    flowId: row.flow_id,
+    customId: row.custom_id,
+    time: row.time.toISOString(),
+    status: JSON.parse(row.status),
+    timeline: JSON.parse(row.timeline),
+    createdAt: row.created_at.toISOString(),
+    updatedAt: row.updated_at.toISOString(),
+    currentStep: JSON.parse(row.current_step),
+    steps: JSON.parse(row.steps)
+  };
+}
   
-  let transaction: Transaction = {
-    transactionId: id,
-    flowId: flow_id,
-    customId: custom_id,
-    time: time,
-    step: step,
-    status: status,
-    data: JSON.parse(data),
-    createdAt: created_at,
-    updatedAt: updated_at,
-  }
-  console.log("transaction consumer", transaction) 
-  return transaction;
-};
-
 @Injectable()
 export class PostgresTransactionsAdapter implements TransactionsPort{
   constructor(private readonly postgresService: PostgresService) {}
@@ -29,24 +27,27 @@ export class PostgresTransactionsAdapter implements TransactionsPort{
     if (transactionIds.length === 0) {
       return [];
     }   
-    console.log(rowList)
-    console.log("transactionsIDS", transactionIds)
+
     const result = await this.postgresService.query(
       `SELECT ${rowList} FROM "transactions" WHERE "id" IN('${transactionIds.join("','")}')`, []
-      );   
-    
+    );
 
-    console.log("result", result.rows)
-    const rows_map = result.rows.map(rowToTransaction);    
-    console.log("rows_map", rows_map)
-    
+    //const rows_map = result.rows.map(rowToTransaction);
+    const rows_map = result.rows.map(row => rowToTransaction(row));
     return rows_map
   }
 
   async updateTransaction(transaction: Transaction): Promise<any> {    
     return this.postgresService.query(
-      `UPDATE transactions SET custom_id = $1, time = $2, data = $3 WHERE id = $4`,
-      [transaction.customId, transaction.time.toISOString(), JSON.stringify(transaction.data), transaction.transactionId]
+      `UPDATE transactions SET custom_id = $1, time = $2, timeline = $3, status = $4, current_step = $5 WHERE id = $6`,
+      [
+        transaction.customId,
+        transaction.time, 
+        JSON.stringify(transaction.timeline),
+        JSON.stringify(transaction.status),
+        JSON.stringify(transaction.currentStep),
+        transaction.transactionId
+      ]
     );
   }
 

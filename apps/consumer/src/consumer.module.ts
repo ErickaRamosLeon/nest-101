@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
-import { PostgresModule } from 'y/postgres';
+import { PostgresModule } from '@libs/postgres';
 import { ConsumerController } from './application';
 import { PostgresTransactionsAdapter, PostgresEventAdapter } from './infraestructure';
 
-import { EVENT_PORT, TRANSACTION_PORT, ConsumerEventsBatchUseCase  } from './domain';
-import { GetEventsUseCase } from './domain/use-cases/get-events.use-case';
-import { GetTransactionsUseCase } from './domain/use-cases/get-transactions.use-case';
+import { EVENT_PORT, TRANSACTION_PORT, ConsumerEventsBatchUseCase,
+  TRANSACTION_EVENT_APPLIER_PORT,
+  GetEventsUseCase, GetTransactionsUseCase 
+} from './domain';
+import { TransactionEventApplierReducerAdapter } from "./infraestructure";
 import { ScheduleModule } from '@nestjs/schedule';
-import { SchemaRegistryModule } from '@app/schema-registry';
+import { SchemaRegistryModule } from '@libs/schema-registry';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { SchemaRegistryModule } from '@app/schema-registry';
     GetTransactionsUseCase,    
     { provide: TRANSACTION_PORT, useClass: PostgresTransactionsAdapter} ,
     { provide: EVENT_PORT, useClass: PostgresEventAdapter } ,
+    { provide: TRANSACTION_EVENT_APPLIER_PORT, useClass: TransactionEventApplierReducerAdapter },
   ],
 })
 export class ConsumerModule {}

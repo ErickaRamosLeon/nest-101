@@ -2,6 +2,8 @@ export type Transaction = {
     transactionId: string;
     flowId: string;
     customId: string;
-    time: Date;    
+    time: string;
+    createdAt: string;
+    updatedAt: string;    
   }
   

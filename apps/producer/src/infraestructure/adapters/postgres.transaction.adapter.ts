@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PostgresService } from "y/postgres";
+import { PostgresService } from "@libs/postgres";
 import { Transaction, TransactionsPort } from "../../domain";
 
 @Injectable()
