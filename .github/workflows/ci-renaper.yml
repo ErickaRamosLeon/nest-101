@@ -1,0 +1,66 @@
+name: ci-renaper
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - apps/renaper/**
+  pull_request:
+    branches:
+      - develop
+    paths:
+      - apps/renaper/**
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: ./apps/renaper
+
+jobs:
+  test-acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+          cache: "npm"
+          cache-dependency-path: apps/renaper/package-lock.json
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm run mockoon:start
+      - run: URL_BASE=http://localhost:5000/ npm run test:acceptance
+
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: nyaa8/package-version@v1
+        with:
+          path: "apps/renaper/package.json"
+          follow-symlinks: "false"
+
+      - uses: benjlevesque/short-sha@v1.2
+        id: short-sha
+        with:
+          length: 7
+
+      - run: |
+          DOCKER_TAG=$PACKAGE_VERSION-$SHA
+          echo "DOCKER_IMAGE=providers-hub/renaper:$DOCKER_TAG" >> $GITHUB_ENV
+      - run: docker build --tag ${{ env.DOCKER_IMAGE }} .
+        if: ${{ github.event_name == 'push'}}
+
+      - name: Push docker image to ECR
+        if: ${{ github.event_name == 'push'}}
+        uses: jwalton/gh-ecr-push@v1
+        with:
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          region: eu-west-1
+          image: ${{ env.DOCKER_IMAGE }}

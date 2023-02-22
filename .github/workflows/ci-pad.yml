@@ -1,0 +1,51 @@
+name: ci-pad
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - apps/pad/**
+  pull_request:
+    branches:
+      - develop
+    paths:
+      - apps/pad/**
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: ./apps/pad
+
+jobs:      
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: nyaa8/package-version@v1
+        with:
+          path: "apps/pad/package.json"
+          follow-symlinks: "false"
+
+      - uses: benjlevesque/short-sha@v1.2
+        id: short-sha
+        with:
+          length: 7
+
+      - run: |
+          DOCKER_TAG=$PACKAGE_VERSION-$SHA
+          echo "DOCKER_IMAGE=providers-hub/pad:$DOCKER_TAG" >> $GITHUB_ENV
+      - run: docker build --tag ${{ env.DOCKER_IMAGE }} .
+        if: ${{ github.event_name == 'push'}}
+        working-directory: ./apps/pad
+
+      - name: Push docker image to ECR
+        if: ${{ github.event_name == 'push'}}
+        uses: jwalton/gh-ecr-push@v1
+        with:
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          region: eu-west-1
+          image: ${{ env.DOCKER_IMAGE }}

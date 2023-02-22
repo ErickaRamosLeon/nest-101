@@ -1,0 +1,44 @@
+name: ci-renap
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - apps/renap/**
+  pull_request:
+    branches:
+      - develop
+    paths:
+      - apps/renap/**
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: nyaa8/package-version@v1
+        with:
+          path: "apps/renap/package.json"
+          follow-symlinks: "false"
+
+      - uses: benjlevesque/short-sha@v1.2
+        id: short-sha
+        with:
+          length: 7
+
+      - run: |
+          DOCKER_TAG=$PACKAGE_VERSION-$SHA
+          echo "DOCKER_IMAGE=providers-hub/renap:$DOCKER_TAG" >> $GITHUB_ENV
+      - run: docker build --tag ${{ env.DOCKER_IMAGE }} .
+        working-directory: ./apps/renap
+
+      - uses: jwalton/gh-ecr-push@v1
+        with:
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          region: eu-west-1
+          image: ${{ env.DOCKER_IMAGE }}
