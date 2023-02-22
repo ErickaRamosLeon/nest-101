@@ -12,6 +12,8 @@ export class TransactionsMapper {
       transactionId: '',
       createdAt: '',
       updatedAt: '',
+      currentStep: {},
+      status: {}
     };
   }
 }

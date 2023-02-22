@@ -1,21 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { PostgresService } from "@libs/postgres";
-import { TransactionsDao } from "../transactions.dao.interface";
+import { TransactionsDao } from "./transactions.dao.interface";
 import { Transaction } from "../transactions.model";
-
-
-
 
 @Injectable()
 export class TransactionsPostgresDao implements TransactionsDao {
     constructor( private readonly postgresService: PostgresService) {}
-
-    async allTransactions(): Promise<Transaction[]> {
-        const listTransactions = await this.postgresService.query(
-            `SELECT * FROM "transactions"`, [])
-        return listTransactions.rows
-        
-    }
 
     async saveTransaction(transaction): Promise<Transaction> {        
         const { transactionId: id, flowId, customId, time, createdAt, updatedAt, currentStep, steps, status, timeline } = transaction;        

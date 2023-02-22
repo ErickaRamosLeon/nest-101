@@ -1,13 +1,10 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { Event, EventDataIsNotValidException, EventsUseCase, 
   EventTypeIsNotValidException 
 } from '../../domain';
 import { CreateEventDto } from '../dto/create-event.dto';
-import { EventsMapper } from '../mapper/events.mapper';
-
-
-
+import { EventsMapper } from '../mapper';
 
 @Controller('/events')
 export class EventsController {

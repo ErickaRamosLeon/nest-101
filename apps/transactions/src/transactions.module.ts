@@ -1,5 +1,5 @@
-import { ISCHEMA_REGISTRY, SchemaRegistryModule } from '@libs/schema-registry';
-import { ApicurioSchemaRegistryService } from '@libs/schema-registry/apicurio-schema-registry.service';
+import { SchemaRegistryModule } from '@libs/schema-registry';
+
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PostgresModule } from '@libs/postgres';
@@ -7,7 +7,7 @@ import { TransactionsPostgresDao } from './dao/transactions.postgres.dao';
 import { TransactionsController } from './transactions.controller';
 import { TransactionsMapper } from './transactions.mapper';
 import { TransactionsService } from './transactions.service';
-import { TRANSACTION_DAO } from "./transactions.dao.interface";
+import { TRANSACTION_DAO } from "./dao/transactions.dao.interface";
 
 @Module({
   imports: [

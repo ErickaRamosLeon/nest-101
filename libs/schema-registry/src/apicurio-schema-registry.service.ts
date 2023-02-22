@@ -18,9 +18,8 @@ export class ApicurioSchemaRegistryService implements SchemaRegistryService {
               baseURL: APICURIO_URL,
             })      
             return data
-        } catch (error) {
-            console.error(error)            
-            throw error
+        } catch (error) {            
+            return null                 
         }
     }
 }

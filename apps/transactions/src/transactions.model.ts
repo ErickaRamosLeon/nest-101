@@ -4,6 +4,8 @@ export type Transaction = {
     customId: string;
     time: string;
     createdAt: string;
-    updatedAt: string;    
+    updatedAt: string;
+    currentStep: object;
+    status: object;    
   }
   

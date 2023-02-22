@@ -20,8 +20,8 @@ export class EventsUseCase {
     event.id = uuidv4();
 
     const schema = await this.schemaRegistryService.getSchema(event.type);
-      
-    if (!schema) {
+   
+    if (!schema) {      
       throw new EventTypeIsNotValidException(event.type);
     }
 
